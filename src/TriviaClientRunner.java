@@ -2,5 +2,5 @@
  * Project name: TriviaBotJavaRMI
  * Created by: jjpawlica on 21.06.2016.
  */
-public interface TriviaClient {
+public class TriviaClientRunner {
 }
