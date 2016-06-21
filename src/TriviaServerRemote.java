@@ -10,29 +10,33 @@ import java.util.Vector;
 public class TriviaServerRemote extends UnicastRemoteObject implements TriviaServer {
 
     //Przechowuje listę graczy
-    private Vector<TriviaClient> players = new Vector<>();
+    private Vector<TriviaClient> triviaClients = new Vector<>();
 
     //Przechowuje referencję do okna serwera
-    private TriviaServerRunner server;
+    private TriviaServerRunner serverWindow;
 
-    public TriviaServerRemote(TriviaServerRunner server) throws RemoteException {
-        this.server = server;
+    public TriviaServerRemote(TriviaServerRunner serverWindow) throws RemoteException {
+        this.serverWindow = serverWindow;
     }
 
-    public synchronized void join(TriviaClient k){
-
-    }
-
-    public synchronized void pause(TriviaClient k){
-
-    }
-
-    public synchronized void leave(TriviaClient k){
+    public synchronized void join(TriviaClient client){
+        triviaClients.add(client);
+        serverWindow.showMessage("New player joined the game");
 
     }
 
-    public synchronized void message(TriviaClient k, String s){
+    public synchronized void pause(TriviaClient client){
+        serverWindow.showMessage("Player paused the game");
+    }
 
+    public synchronized void leave(TriviaClient client){
+        triviaClients.remove(client);
+        serverWindow.showMessage("Player left the game");
+
+    }
+
+    public synchronized void message(TriviaClient client, String message){
+        serverWindow.showMessage("Player got the right answer");
     }
 
 }

@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 
 /**
@@ -29,6 +31,9 @@ public class TriviaServerRunner extends JFrame {
     //Referencja do serwera
     private Server server;
 
+    //Referencja do okna servera
+    private TriviaServerRunner serverWindow;
+
     public TriviaServerRunner() {
 
         //Ustawienie nazwy okna
@@ -36,6 +41,9 @@ public class TriviaServerRunner extends JFrame {
 
         //Ustawienie GUI
         this.prepareGUI();
+
+        //Ustaw referencję do okna serwera
+        this.serverWindow = this;
     }
 
     private void prepareGUI(){
@@ -63,6 +71,7 @@ public class TriviaServerRunner extends JFrame {
                 server = new Server();
 
                 //Start server thread
+                server.run();
 
                 //Ustaw pola i przyciski na nieaktywne
                 portNumberTextField.setEnabled(false);
@@ -78,7 +87,7 @@ public class TriviaServerRunner extends JFrame {
         pasueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Włącz pauze na serwerze
+                server.pause();
             }
         });
 
@@ -88,6 +97,9 @@ public class TriviaServerRunner extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //Stop server thread
+                server.kill();
+
+                //Ustaw pola i przyciski na nieaktywne
                 portNumberTextField.setEnabled(true);
                 startButton.setEnabled(true);
                 pasueButton.setEnabled(false);
@@ -114,8 +126,54 @@ public class TriviaServerRunner extends JFrame {
         setVisible(true);
     }
 
-    private class Server {
+    private class Server extends Thread{
 
+        private Registry mRegistry;
+
+        public void run() {
+
+            try {
+                mRegistry = LocateRegistry.createRegistry(new Integer(portNumberTextField.getText()));
+                showMessage("Created new registry at port number: " + portNumberTextField.getText());
+            } catch (Exception e) {
+                showMessage("Couldn't create new registry, trying existing one...");
+            }
+
+            if (mRegistry == null) {
+                try {
+                    mRegistry = LocateRegistry.getRegistry();
+                } catch (Exception e) {
+                    showMessage("No registry running!");
+                }
+            }
+
+            try {
+                TriviaServerRemote serverRemote = new TriviaServerRemote(serverWindow);
+                mRegistry.rebind("TriviaBot Server", serverRemote);
+                showMessage("Server was successfully registered and is running at port number: " + portNumberTextField.getText());
+            } catch (Exception e) {
+                showMessage("Couldn't create new server!");
+            }
+        }
+
+        public void pause(){
+            showMessage("You paused the game");
+        }
+
+        public void kill(){
+            try {
+                mRegistry.unbind("TriviaBot Server");
+                showMessage("Server was unregistered successfully!");
+            } catch (Exception e) {
+                showMessage("Coudlnt unregister server!");
+            }
+
+        }
+    }
+
+    public void showMessage(String message){
+        messagesTextArea.append(message + "\n");
+        messagesTextArea.setCaretPosition(messagesTextArea.getDocument().getLength());
     }
 
     public static void main(String[] args) {
