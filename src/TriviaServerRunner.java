@@ -25,7 +25,7 @@ public class TriviaServerRunner extends JFrame {
     private JTextField portNumberTextField;
     private JTextArea messagesTextArea;
 
-    //Serwer config
+    //Podstawowe ustawienie serwera
     private int portNumber = 1099;
 
     //Referencja do serwera
@@ -33,6 +33,9 @@ public class TriviaServerRunner extends JFrame {
 
     //Referencja do okna servera
     private TriviaServerRunner serverWindow;
+
+    //Referencja do logiki gry
+    private TriviaGameLogic mTriviaGame;
 
     public TriviaServerRunner() {
 
@@ -89,12 +92,11 @@ public class TriviaServerRunner extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (pauseButton.getText() == "Pause Game"){
                 pauseButton.setText("Resume Game");
-                    server.pauseGame();
+                    //pause game
                 } else {
                     pauseButton.setText("Pause Game");
-                    server.resumeGame();
+                    //resume game
                 }
-
             }
         });
 
@@ -136,7 +138,6 @@ public class TriviaServerRunner extends JFrame {
     private class Server extends Thread{
 
         private Registry mRegistry;
-        private TriviaGameLogic mTriviaGame;
 
         public void run() {
 
@@ -164,24 +165,13 @@ public class TriviaServerRunner extends JFrame {
             }
         }
 
-        public void pauseGame(){
-            showMessage("You paused the game");
-
-            // TO DO: Trivia Game pauza
-        }
-
-        public void resumeGame(){
-            showMessage("You resumed the game");
-
-            //TO DO: Trivia Game Resume;
-        }
 
         public void kill(){
             try {
                 mRegistry.unbind("TriviaBot Server");
                 showMessage("Server was unregistered successfully!");
             } catch (Exception e) {
-                showMessage("Coudlnt unregister server!");
+                showMessage("Couldn't unregister server!");
             }
         }
     }
@@ -189,6 +179,10 @@ public class TriviaServerRunner extends JFrame {
     public void showMessage(String message){
         messagesTextArea.append(message + "\n");
         messagesTextArea.setCaretPosition(messagesTextArea.getDocument().getLength());
+    }
+
+    public TriviaGameLogic getTriviaGame(){
+        return mTriviaGame;
     }
 
     public static void main(String[] args) {

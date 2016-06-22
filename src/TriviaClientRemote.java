@@ -54,6 +54,11 @@ public class TriviaClientRemote extends UnicastRemoteObject implements TriviaCli
     }
 
     @Override
+    public int getPlayerPauseLimit() throws RemoteException {
+        return 3; // to do
+    }
+
+    @Override
     public void setPlayerName(String newName) throws RemoteException {
       this.playerName = newName;
     }
@@ -61,5 +66,12 @@ public class TriviaClientRemote extends UnicastRemoteObject implements TriviaCli
     @Override
     public void setPlayerScore(int newScore) throws RemoteException {
         this.playerScore = newScore;
+    }
+
+    @Override
+    public void setPlayerPauseLimit(int newLimit) throws RemoteException {
+
+        // to do
+
     }
 }
