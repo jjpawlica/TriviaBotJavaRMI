@@ -33,6 +33,11 @@ public class TriviaClientRemote extends UnicastRemoteObject implements TriviaCli
     }
 
     @Override
+    public void message(String message) throws RemoteException {
+        this.clientWindow.showMessage(message);
+    }
+
+    @Override
     public void leaveMessage(String playerName, Vector<TriviaClient> playerList) throws RemoteException {
         this.clientWindow.showMessage(LEAVE_MESSAGE + this.playerName);
         this.clientWindow.refreshPlayerList();

@@ -76,7 +76,7 @@ public class TriviaServerRunner extends JFrame {
                 mServer.run();
 
                 //Uruchom grę
-                mTriviaGame = new TriviaGame(mServerWindow);
+                mTriviaGame = new TriviaGame(mServerWindow, serverRemote);
 
                 //Ustaw pola i przyciski na nieaktywne
                 portNumberTextField.setEnabled(false);

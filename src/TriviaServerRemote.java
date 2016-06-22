@@ -1,5 +1,6 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -48,10 +49,20 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
 
     public synchronized void answer(TriviaClient client, String answer) throws RemoteException {
 
-        //check if game than check if answer is right
-        //if its right then give next question and add point if not than send message
-        serverWindow.showMessage("Player " + client.getPlayerName() + " got the right answer");
-        serverWindow.showMessage("Player " + client.getPlayerName() + " has " + client.getPlayerScore() + " points");
+        if(mTriviaGame.checkAnswer(answer)){
+            serverWindow.showMessage("Player " + client.getPlayerName() + " got the right answer");
+            serverWindow.showMessage("Player " + client.getPlayerName() + " has " + client.getPlayerScore() + " points");
+            for (TriviaClient player : triviaClients) {
+                player.message("Player " + client.getPlayerName() + " got the right answer");
+            }
+        }else{
+            client.message("That is not the correct answer for this question!");
+        }
     }
 
+    public synchronized void annouce(String announcement) throws RemoteException {
+        for (TriviaClient client : triviaClients) {
+            client.message(announcement);
+        }
+    }
 }

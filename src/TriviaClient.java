@@ -11,6 +11,7 @@ import java.util.Vector;
 public interface TriviaClient extends Remote{
 
     public void joinMessage(String playerName, Vector<TriviaClient> playersList) throws RemoteException;
+    public void message(String message) throws RemoteException;
     public void leaveMessage(String playerName, Vector<TriviaClient> playerList) throws RemoteException;
 
     public void answer(String answer) throws RemoteException;
