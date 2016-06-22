@@ -136,6 +136,7 @@ public class TriviaServerRunner extends JFrame {
     private class Server extends Thread{
 
         private Registry mRegistry;
+        private TriviaGameLogic mTriviaGame;
 
         public void run() {
 
@@ -165,10 +166,14 @@ public class TriviaServerRunner extends JFrame {
 
         public void pauseGame(){
             showMessage("You paused the game");
+
+            // TO DO: Trivia Game pauza
         }
 
         public void resumeGame(){
             showMessage("You resumed the game");
+
+            //TO DO: Trivia Game Resume;
         }
 
         public void kill(){
