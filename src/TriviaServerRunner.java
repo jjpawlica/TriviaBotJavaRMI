@@ -7,7 +7,6 @@ import java.awt.event.WindowEvent;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-
 /**
  * Project name: TriviaBotJavaRMI
  * Created by: jjpawlica on 21.06.2016.
@@ -76,6 +75,9 @@ public class TriviaServerRunner extends JFrame {
                 mServer = new Server();
                 mServer.run();
 
+                //Uruchom grę
+                mTriviaGame = new TriviaGame(mServerWindow);
+
                 //Ustaw pola i przyciski na nieaktywne
                 portNumberTextField.setEnabled(false);
                 startServerButton.setEnabled(false);
@@ -91,7 +93,9 @@ public class TriviaServerRunner extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //Automatycznie zatrzymaj grę
-                //mTriviaGame.finish();
+                if (mTriviaGame.getRunningStatus()) {
+                    mTriviaGame.finish();
+                }
 
                 //Wyłącz serwer
                 mServer.kill();
@@ -112,12 +116,18 @@ public class TriviaServerRunner extends JFrame {
         startGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //mTriviaGame.run();
-                startGameButton.setEnabled(false);
-                pauseGameButton.setEnabled(true);
-                finishGameButton.setEnabled(true);
-                repaint();
+                //Uruchom nową grę
+                mTriviaGame.run();
 
+                //Ustaw przyciski
+                if (mTriviaGame.getNumberOfQuestion() > 0) {
+                    startGameButton.setEnabled(false);
+                    pauseGameButton.setEnabled(true);
+                    finishGameButton.setEnabled(true);
+                    repaint();
+                } else {
+                    mTriviaGame.stop();
+                }
             }
         });
 
@@ -126,8 +136,9 @@ public class TriviaServerRunner extends JFrame {
         pauseGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // if game not paused than pause
-                // mTriviaGame.pause();
+                if (!mTriviaGame.getPausedStatus()){
+                mTriviaGame.pause();
+                }
                 repaint();
             }
         });
@@ -137,7 +148,10 @@ public class TriviaServerRunner extends JFrame {
         finishGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //mTriviaGame.finish();
+                if (mTriviaGame.getRunningStatus()) {
+                    mTriviaGame.finish();
+                }
+
                 startGameButton.setEnabled(true);
                 pauseGameButton.setText("Pause Game");
                 pauseGameButton.setEnabled(false);
@@ -165,12 +179,6 @@ public class TriviaServerRunner extends JFrame {
         setVisible(true);
     }
 
-    private class TriviaGame extends Thread{
-        public void run(){}
-        public void pause(){}
-        public void finish(){}
-    }
-
     private class Server extends Thread {
 
         private Registry mRegistry;
@@ -192,7 +200,7 @@ public class TriviaServerRunner extends JFrame {
             }
 
             try {
-                serverRemote = new TriviaServerRemote(mServerWindow);
+                serverRemote = new TriviaServerRemote(mServerWindow, mTriviaGame);
                 mRegistry.rebind("TriviaBot Server", serverRemote);
                 showMessage("Server was successfully registered and is running at port number: " + portNumberTextField.getText());
             } catch (Exception e) {

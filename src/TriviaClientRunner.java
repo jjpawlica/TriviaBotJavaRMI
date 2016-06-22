@@ -49,7 +49,7 @@ public class TriviaClientRunner extends JFrame{
 
     private void prepareGUI(){
 
-        this.setSize(640, 480);
+        this.setSize(768, 640);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         this.addWindowListener(new WindowAdapter() {
