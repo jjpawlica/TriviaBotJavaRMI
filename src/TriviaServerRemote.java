@@ -22,7 +22,6 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
     public synchronized void join(TriviaClient client){
         triviaClients.add(client);
         serverWindow.showMessage("New player joined the game");
-
     }
 
     public synchronized void pause(TriviaClient client){
@@ -32,10 +31,9 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
     public synchronized void leave(TriviaClient client){
         triviaClients.remove(client);
         serverWindow.showMessage("Player left the game");
-
     }
 
-    public synchronized void message(TriviaClient client, String message){
+    public synchronized void answer(TriviaClient client, String answer){
         serverWindow.showMessage("Player got the right answer");
     }
 
