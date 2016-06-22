@@ -20,7 +20,7 @@ public class TriviaServerRunner extends JFrame {
 
     //GUI
     private JPanel mPanel;
-    private JButton startButton, pasueButton, stopButton;
+    private JButton startButton, pauseButton, stopButton;
     private JLabel portNumberLabel;
     private JTextField portNumberTextField;
     private JTextArea messagesTextArea;
@@ -76,18 +76,25 @@ public class TriviaServerRunner extends JFrame {
                 //Ustaw pola i przyciski na nieaktywne
                 portNumberTextField.setEnabled(false);
                 startButton.setEnabled(false);
-                pasueButton.setEnabled(true);
+                pauseButton.setEnabled(true);
                 stopButton.setEnabled(true);
                 repaint();
             }
         });
 
-        pasueButton = new JButton("Pause Game");
-        pasueButton.setEnabled(false);
-        pasueButton.addActionListener(new ActionListener() {
+        pauseButton = new JButton("Pause Game");
+        pauseButton.setEnabled(false);
+        pauseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                server.pause();
+                if (pauseButton.getText() == "Pause Game"){
+                pauseButton.setText("Resume Game");
+                    server.pauseGame();
+                } else {
+                    pauseButton.setText("Pause Game");
+                    server.resumeGame();
+                }
+
             }
         });
 
@@ -102,7 +109,7 @@ public class TriviaServerRunner extends JFrame {
                 //Ustaw pola i przyciski na nieaktywne
                 portNumberTextField.setEnabled(true);
                 startButton.setEnabled(true);
-                pasueButton.setEnabled(false);
+                pauseButton.setEnabled(false);
                 stopButton.setEnabled(false);
                 repaint();
             }
@@ -116,7 +123,7 @@ public class TriviaServerRunner extends JFrame {
         mPanel.add(portNumberLabel);
         mPanel.add(portNumberTextField);
         mPanel.add(startButton);
-        mPanel.add(pasueButton);
+        mPanel.add(pauseButton);
         mPanel.add(stopButton);
 
         //Dodaj elementy do okna
@@ -156,8 +163,12 @@ public class TriviaServerRunner extends JFrame {
             }
         }
 
-        public void pause(){
+        public void pauseGame(){
             showMessage("You paused the game");
+        }
+
+        public void resumeGame(){
+            showMessage("You resumed the game");
         }
 
         public void kill(){
@@ -167,7 +178,6 @@ public class TriviaServerRunner extends JFrame {
             } catch (Exception e) {
                 showMessage("Coudlnt unregister server!");
             }
-
         }
     }
 
