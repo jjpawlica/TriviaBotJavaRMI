@@ -15,8 +15,6 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
     //Przechowuje referencję do okna serwera
     private TriviaServerRunner serverWindow;
 
-    //Przechowuje referencję do gry
-    private TriviaGameLogic mTriviaGame = serverWindow.getTriviaGame();
 
     public TriviaServerRemote(TriviaServerRunner serverWindow) throws RemoteException {
         this.serverWindow = serverWindow;
@@ -24,7 +22,7 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
 
     public synchronized void join(TriviaClient client) throws RemoteException{
         triviaClients.add(client);
-        serverWindow.showMessage("New player joined the game");
+        serverWindow.showMessage("Player " + client.getPlayerName() + " has joined the game");
     }
 
     public synchronized void pause(TriviaClient client) throws RemoteException{
@@ -35,11 +33,12 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
 
     public synchronized void leave(TriviaClient client) throws RemoteException{
         triviaClients.remove(client);
-        serverWindow.showMessage("Player left the game");
+        serverWindow.showMessage("Player " + client.getPlayerName() + " has left the game");
     }
 
     public synchronized void answer(TriviaClient client, String answer) throws RemoteException{
-        serverWindow.showMessage("Player got the right answer");
+        serverWindow.showMessage("Player " + client.getPlayerName() + " got the right answer");
+        serverWindow.showMessage("Player " + client.getPlayerName() + " has " + client.getPlayerScore() + " points");
     }
 
 }
