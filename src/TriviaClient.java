@@ -18,7 +18,7 @@ public interface TriviaClient extends Remote{
     public String getPlayerName() throws RemoteException;
     public int getPlayerScore() throws RemoteException;
 
-    public void setPlayerName() throws RemoteException;
-    public int setPlayerScore() throws RemoteException;
+    public void setPlayerName(String newName) throws RemoteException;
+    public void setPlayerScore(int newScore) throws RemoteException;
 
 }
