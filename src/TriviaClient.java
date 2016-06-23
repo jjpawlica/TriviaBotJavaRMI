@@ -17,6 +17,6 @@ public interface TriviaClient extends Remote{
     public int getPlayerScore() throws RemoteException;
     public void setPlayerScore(int newScore) throws RemoteException;
 
-    public void refreshPlayerList(Vector<TriviaClient> playersList) throws RemoteException;
+    public void refreshList(Vector<TriviaClient> playersList) throws RemoteException;
 
 }

@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.rmi.ConnectException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Vector;
@@ -109,13 +111,7 @@ public class TriviaClientRunner extends JFrame{
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == 10) {
-                    try {
-                        mTriviaServer.answer(mTriviaClient, answerText.getText());
-                        answerText.setText("");
-                    } catch (Exception ex) {
-                        showMessage("Couldn't send you answer to the server.");
-                        showMessage("Fallowing exception occurred: " + ex);
-                    }
+                    sendAnswer();
                 }
             }
         });
@@ -159,6 +155,18 @@ public class TriviaClientRunner extends JFrame{
         hostName.setEnabled(true);
     }
 
+    //Metoda wysyłająca odpowiedź
+    private  void sendAnswer(){
+        try {
+            mTriviaServer.answer(mTriviaClient, answerText.getText());
+            answerText.setText("");
+        } catch (Exception ex) {
+            showMessage("Couldn't send you answer to the server.");
+            showMessage("Fallowing exception occurred: " + ex);
+            answerText.setText("");
+        }
+    }
+
     //Klasa odpowiedzialna za tworzenie i usuwanie klienta RMI
     private class Client extends Thread{
 
@@ -171,9 +179,8 @@ public class TriviaClientRunner extends JFrame{
                 String playerName = JOptionPane.showInputDialog(null, "Provide new player name:");
                 mTriviaClient = new TriviaClientRemote(clientWindow, playerName);
                 mTriviaServer.join(mTriviaClient);
-
-            } catch (Exception ex) {
-                System.out.println("Error in connecting to the server: " + ex);
+            } catch (Exception ex){
+                showMessage("Error in connecting to the server: " + ex);
             }
         }
     }

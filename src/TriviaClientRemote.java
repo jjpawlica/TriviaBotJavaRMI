@@ -51,8 +51,8 @@ public class TriviaClientRemote extends UnicastRemoteObject implements TriviaCli
 
     //Metoda oświeża listę graczy u klienta
     @Override
-    public void refreshPlayerList(Vector<TriviaClient> playerList) throws RemoteException {
-        clientWindow.refreshPlayerList(playerList);
+    public void refreshList(Vector<TriviaClient> playerList) throws RemoteException {
+        this.clientWindow.refreshPlayerList(playerList);
     }
 }
 
