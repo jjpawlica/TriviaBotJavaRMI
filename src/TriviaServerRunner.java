@@ -252,7 +252,7 @@ public class TriviaServerRunner extends JFrame {
         }
     }
 
-    //Główna metoda programu
+    //Główna metoda programu serwera
     public static void main(String[] args) {
         new TriviaServerRunner();
     }

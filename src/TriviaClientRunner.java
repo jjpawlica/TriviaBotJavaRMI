@@ -37,6 +37,7 @@ public class TriviaClientRunner extends JFrame{
     //Referencja do okna clienta
     private TriviaClientRunner clientWindow;
 
+    //Podstawowy konstruktor dla okna klienta
     public TriviaClientRunner(){
 
         //Ustawienie nazwy okna
@@ -49,6 +50,7 @@ public class TriviaClientRunner extends JFrame{
         this.clientWindow = this;
     }
 
+    //Metoda ustawiająca okno serwera i odpowiadająca za jego zmiany
     private void prepareGUI(){
 
         this.setSize(768, 640);
@@ -134,6 +136,7 @@ public class TriviaClientRunner extends JFrame{
 
     }
 
+    //Metoda dołączająca do gry
     private void joinGame(){
         joinButton.setEnabled(false);
         leaveButton.setEnabled(true);
@@ -142,6 +145,7 @@ public class TriviaClientRunner extends JFrame{
         client.start();
     }
 
+    //Metoda wychodząca  gry
     private void leaveGame(){
         playersList.clear();
         try {
@@ -155,6 +159,7 @@ public class TriviaClientRunner extends JFrame{
         hostName.setEnabled(true);
     }
 
+    //Klasa odpowiedzialna za tworzenie i usuwanie klienta RMI
     private class Client extends Thread{
 
         private Registry mRegistry;
@@ -163,7 +168,7 @@ public class TriviaClientRunner extends JFrame{
             try {
                 mRegistry = LocateRegistry.getRegistry(hostName.getText());
                 mTriviaServer = (TriviaServer) mRegistry.lookup("TriviaBot Server");
-                String playerName = JOptionPane.showInputDialog(null, "Provide new player name");
+                String playerName = JOptionPane.showInputDialog(null, "Provide new player name:");
                 mTriviaClient = new TriviaClientRemote(clientWindow, playerName);
                 mTriviaServer.join(mTriviaClient);
 
@@ -173,12 +178,13 @@ public class TriviaClientRunner extends JFrame{
         }
     }
 
+    //Metoda odpowiedzialna za wyświetlanie wiadomości w oknie klienta
     public void showMessage(String message){
         messagesTextArea.append(message + "\n");
         messagesTextArea.setCaretPosition(messagesTextArea.getDocument().getLength());
     }
 
-    //Metoda odpowiedziala za odświeżanie listy graczy na serwerze
+    //Metoda odpowiedziala za odświeżanie listy graczy na kliencie
     public void refreshPlayerList(Vector<TriviaClient> newPlayersList) {
         playersList.clear();
 
@@ -192,6 +198,7 @@ public class TriviaClientRunner extends JFrame{
         }
     }
 
+    //Główna metoda programu klienta
     public static void main(String[] args) {
         new TriviaClientRunner();
     }
