@@ -110,10 +110,34 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
 
     //Wyślij wiadomość jak gra została zakończona
     public synchronized void finishGame() throws RemoteException {
-        TriviaClient highestScoreClient;
-        for (TriviaClient client : triviaClients) {
-            highestScoreClient = client;
-            client.message("The game has finished");
+
+        //Co zrobić jak są jakczyś gracze w grze
+        if(triviaClients.size() >0 ) {
+
+            TriviaClient highestScoreClient = triviaClients.firstElement();
+            int maxScore = highestScoreClient.getPlayerScore();
+
+            //Wyświetl kto wygrał
+            for (TriviaClient client : triviaClients) {
+                if (client.getPlayerScore() >= maxScore) {
+                    highestScoreClient = client;
+                    maxScore = client.getPlayerScore();
+                }
+                client.message("The game has finished, player " + highestScoreClient.getPlayerName() + " won with score " + highestScoreClient.getPlayerScore()+"!");
+            }
+            serverWindow.showMessage("The game has finished, player " + highestScoreClient.getPlayerName() + " won with score " + highestScoreClient.getPlayerScore()+"!");
+
+            //Zresetuj punkty wszystkich graczy
+            for (TriviaClient client : triviaClients) {
+                client.setPlayerScore(0);
+            }
+
+            //Odśwież listę graczy na serwerze i u pozostałych graczy
+            serverWindow.refreshPlayerList(triviaClients);
+
+        } else {
+            serverWindow.showMessage("The game has finished with now players!");
         }
+
     }
 }

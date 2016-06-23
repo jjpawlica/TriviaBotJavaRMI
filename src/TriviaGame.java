@@ -82,7 +82,6 @@ public class TriviaGame extends Thread {
         try {
             isRunning = false;
             serverRemote.finishGame();
-            serverWindow.showMessage("The game has finished!");
             timer.cancel();
             this.stop();
         } catch (RemoteException ex) {
