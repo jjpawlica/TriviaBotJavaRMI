@@ -41,12 +41,14 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
             client.message("You have joined the game!");
             client.message("Current question is: " + mTriviaGame.getCurrentQuestion());
 
-            //Odśwież listę graczy u pozostałych graczy
-
         } else{
             serverWindow.showMessage("Player " + client.getPlayerName() + " has joined the server");
             client.message("You have join the server!");
         }
+
+        //Odśwież listę graczy na serwerze i u pozostałych graczy
+        serverWindow.showMessage("Current number of players:" + triviaClients.size());
+        serverWindow.refreshPlayerList(triviaClients);
     }
 
     //Co się dzieje jak gracz opuści grę
@@ -62,11 +64,13 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
         triviaClients.remove(client);
         if (mTriviaGameRunningStatut) {
             serverWindow.showMessage("Player " + client.getPlayerName() + " has joined the game");
-
-            //Odśwież listę graczy u pozostałych graczy
         } else {
             serverWindow.showMessage("Player " + client.getPlayerName() + " has left the sever");
         }
+
+        //Odśwież listę graczy na serwerze i u pozostałych graczy
+        serverWindow.showMessage("Current number of players:" + triviaClients.size());
+        serverWindow.refreshPlayerList(triviaClients);
     }
 
     //Co się dzieje jak gracz wyślę odpowiedź
@@ -74,9 +78,12 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
 
         //Co się dzieje jak opowiedź jest prawidłowa
         if (mTriviaGame.checkAnswer(answer)) {
-            serverWindow.showMessage("Player " + client.getPlayerName() + " got the right answer");
+            serverWindow.showMessage("Player " + client.getPlayerName() + " got the right answer!");
             client.setPlayerScore(client.getPlayerScore() + 1);
-            serverWindow.showMessage("Player " + client.getPlayerName() + " has " + client.getPlayerScore() + " points");
+
+            //Odśwież listę graczy na serwerze
+            serverWindow.refreshPlayerList(triviaClients);
+
             for (TriviaClient player : triviaClients) {
                 player.message("Player " + client.getPlayerName() + " got the right answer");
                 //Odśwież listę graczy u pozostałych graczy

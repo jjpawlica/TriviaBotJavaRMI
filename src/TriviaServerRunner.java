@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Vector;
 
 /**
  * Project name: TriviaBotJavaRMI
@@ -24,6 +25,8 @@ public class TriviaServerRunner extends JFrame {
     private JLabel portNumberLabel;
     private JTextField portNumberTextField;
     private JTextArea messagesTextArea;
+    private JList<String> players;
+    private DefaultListModel<String> playersList;
 
     //Podstawowe ustawienie serwera
     private int portNumber = 1099;
@@ -74,7 +77,7 @@ public class TriviaServerRunner extends JFrame {
         startServerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               runServer();
+                runServer();
             }
         });
 
@@ -92,7 +95,7 @@ public class TriviaServerRunner extends JFrame {
         startGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              startGame();
+                startGame();
             }
         });
 
@@ -101,13 +104,17 @@ public class TriviaServerRunner extends JFrame {
         finishGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            finishGame();
+                finishGame();
             }
         });
 
         messagesTextArea = new JTextArea();
         messagesTextArea.setLineWrap(true);
         messagesTextArea.setEditable(false);
+
+        playersList = new DefaultListModel<String>();
+        players = new JList<String>(playersList);
+        players.setFixedCellWidth(120);
 
         //Dodaj elementy do panelu menu
         mPanel.add(portNumberLabel);
@@ -120,12 +127,13 @@ public class TriviaServerRunner extends JFrame {
         //Dodaj elementy do okna
         this.add(mPanel, BorderLayout.NORTH);
         this.add(new JScrollPane(messagesTextArea), BorderLayout.CENTER);
+        this.add(new JScrollPane(players), BorderLayout.EAST);
 
         setVisible(true);
     }
 
     //Metoda zaczynająca pracę serwera
-    private void runServer(){
+    private void runServer() {
         //Utwórz i uruchom serwer
         mServer = new Server();
         mServer.run();
@@ -142,7 +150,7 @@ public class TriviaServerRunner extends JFrame {
     }
 
     //Metoda kończąca pracę serwera
-    private void stopServer(){
+    private void stopServer() {
         //Automatycznie zatrzymaj grę
         if (mTriviaGame.getRunningStatus()) {
             mTriviaGame.finish();
@@ -161,7 +169,7 @@ public class TriviaServerRunner extends JFrame {
     }
 
     //Metoda zaczynająca nową grę
-    private void startGame(){
+    private void startGame() {
         //Uruchom nową grę
         mTriviaGame.run();
 
@@ -174,7 +182,7 @@ public class TriviaServerRunner extends JFrame {
     }
 
     //Metoda kończąca grę
-    private void finishGame(){
+    private void finishGame() {
         if (mTriviaGame.getRunningStatus()) {
             mTriviaGame.finish();
         }
@@ -226,6 +234,20 @@ public class TriviaServerRunner extends JFrame {
     public void showMessage(String message) {
         messagesTextArea.append(message + "\n");
         messagesTextArea.setCaretPosition(messagesTextArea.getDocument().getLength());
+    }
+
+    //Metoda odpowiedziala za odświeżanie listy graczy na serwerze
+    public void refreshPlayerList(Vector<TriviaClient> newPlayersList) {
+        playersList.clear();
+
+        for (TriviaClient client : newPlayersList) {
+            try {
+                playersList.addElement(client.getPlayerName() + ": " + client.getPlayerScore());
+            } catch (Exception ex) {
+                showMessage("Couldn't refresh players list!");
+                showMessage("Exception: " + ex);
+            }
+        }
     }
 
     //Główna metoda programu
