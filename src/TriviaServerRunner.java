@@ -178,7 +178,6 @@ public class TriviaServerRunner extends JFrame {
         if (mTriviaGame.getRunningStatus()) {
             mTriviaGame.finish();
         }
-
         startGameButton.setEnabled(true);
         finishGameButton.setEnabled(false);
     }

@@ -16,7 +16,7 @@ public class TriviaClientRunner extends JFrame{
 
     //GUI
     private JPanel mPanel;
-    private JButton joinButton, leaveButton, pauseButton;
+    private JButton joinButton, leaveButton;
     private JLabel serverLabel;
     private JTextField hostName, answerText;
     private JTextArea messagesTextArea;
@@ -72,7 +72,6 @@ public class TriviaClientRunner extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 joinButton.setEnabled(false);
                 leaveButton.setEnabled(true);
-                pauseButton.setEnabled(true);
                 hostName.setEnabled(false);
                 client = new Client();
                 client.start();
@@ -94,26 +93,6 @@ public class TriviaClientRunner extends JFrame{
                 leaveButton.setEnabled(false);
                 joinButton.setEnabled(true);
                 hostName.setEnabled(true);
-            }
-        });
-
-        pauseButton = new JButton("Pause Game");
-        pauseButton.setEnabled(false);
-        pauseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try{
-                    if (pauseButton.getText() == "Pause Game"){
-                        pauseButton.setText("Resume Game");
-                        mTriviaServer.pause(mTriviaClient);
-                    } else {
-                        pauseButton.setText("Pause Game");
-                        // to do resume
-                    }
-                } catch (Exception ex){
-                    showMessage("Couldn't pause the game!");
-                    showMessage("Fallowing exception occurred: " + ex);
-                }
             }
         });
 
@@ -154,7 +133,6 @@ public class TriviaClientRunner extends JFrame{
         mPanel.add(hostName);
         mPanel.add(joinButton);
         mPanel.add(leaveButton);
-        mPanel.add(pauseButton);
 
         //Dodaj elementy do okna
         this.add(mPanel, BorderLayout.NORTH);
