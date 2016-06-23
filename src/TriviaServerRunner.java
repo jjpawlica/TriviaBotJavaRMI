@@ -20,7 +20,7 @@ public class TriviaServerRunner extends JFrame {
 
     //GUI
     private JPanel mPanel;
-    private JButton startServerButton, stopServerButton, startGameButton, pauseGameButton, finishGameButton;
+    private JButton startServerButton, stopServerButton, startGameButton, finishGameButton;
     private JLabel portNumberLabel;
     private JTextField portNumberTextField;
     private JTextArea messagesTextArea;
@@ -96,15 +96,6 @@ public class TriviaServerRunner extends JFrame {
             }
         });
 
-        pauseGameButton = new JButton("Pause Game");
-        pauseGameButton.setEnabled(false);
-        pauseGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pauseGame();
-            }
-        });
-
         finishGameButton = new JButton("Stop Game");
         finishGameButton.setEnabled(false);
         finishGameButton.addActionListener(new ActionListener() {
@@ -124,7 +115,6 @@ public class TriviaServerRunner extends JFrame {
         mPanel.add(startServerButton);
         mPanel.add(stopServerButton);
         mPanel.add(startGameButton);
-        mPanel.add(pauseGameButton);
         mPanel.add(finishGameButton);
 
         //Dodaj elementy do okna
@@ -166,7 +156,6 @@ public class TriviaServerRunner extends JFrame {
         startServerButton.setEnabled(true);
         stopServerButton.setEnabled(false);
         startGameButton.setEnabled(false);
-        pauseGameButton.setEnabled(false);
         finishGameButton.setEnabled(false);
         repaint();
     }
@@ -179,18 +168,9 @@ public class TriviaServerRunner extends JFrame {
         //Ustaw przyciski
         if (mTriviaGame.getNumberOfQuestion() > 0) {
             startGameButton.setEnabled(false);
-            pauseGameButton.setEnabled(true);
             finishGameButton.setEnabled(true);
             repaint();
         }
-    }
-
-    //Metoda pauzująca grę
-    private void pauseGame(){
-        if (!mTriviaGame.getPausedStatus()){
-            mTriviaGame.pause();
-        }
-        repaint();
     }
 
     //Metoda kończąca grę
@@ -200,8 +180,6 @@ public class TriviaServerRunner extends JFrame {
         }
 
         startGameButton.setEnabled(true);
-        pauseGameButton.setText("Pause Game");
-        pauseGameButton.setEnabled(false);
         finishGameButton.setEnabled(false);
     }
 

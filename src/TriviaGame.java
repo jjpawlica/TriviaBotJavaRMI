@@ -16,7 +16,6 @@ public class TriviaGame extends Thread {
 
     //Stan gry
     private boolean isRunning = false;
-    private boolean isPaused = false;
 
     //Generator liczb pseudolosowych
     private Random rand = new Random(System.currentTimeMillis());
@@ -78,17 +77,10 @@ public class TriviaGame extends Thread {
         }
     }
 
-    //Metoda pauzująca grę
-    public void pause() {
-        isPaused = true;
-        serverWindow.showMessage("Game was paused");
-    }
-
     //Metoda kończąca grę
     public void finish() {
         try {
             isRunning = false;
-            isPaused = false;
             serverRemote.finishGame();
             serverWindow.showMessage("The game has finished!");
             timer.cancel();
@@ -108,11 +100,6 @@ public class TriviaGame extends Thread {
     //Sprawdź czy gra jest w trakcie
     public boolean getRunningStatus() {
         return isRunning;
-    }
-
-    //Sprawdź czy gra jest w stanie pauzy
-    public boolean getPausedStatus() {
-        return isPaused;
     }
 
     //Metoday wysyłająca loswe pytanie do graczy

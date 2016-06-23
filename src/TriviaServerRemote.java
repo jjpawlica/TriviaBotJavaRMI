@@ -49,15 +49,6 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
         }
     }
 
-    //Co się dzieje jak gracz uruchomił pauze
-    public synchronized void pause(TriviaClient client) throws RemoteException {
-
-        //check if game is running if not that cannot pause the game if yes than pause the game and add the pause limit
-        serverWindow.showMessage("Player " + client.getPlayerName() + " has paused the game");
-        serverWindow.showMessage("Player " + client.getPlayerName() + " can pause the game " + client.getPlayerPauseLimit() + " more times.");
-        serverWindow.showMessage("Game will resume in 10 seconds!");
-    }
-
     //Co się dzieje jak gracz opuści grę
     public synchronized void leave(TriviaClient client) throws RemoteException {
         triviaClients.remove(client);

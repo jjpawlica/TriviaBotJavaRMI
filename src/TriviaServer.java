@@ -8,7 +8,6 @@ import java.rmi.RemoteException;
 public interface TriviaServer extends Remote {
 
     public void join(TriviaClient k) throws RemoteException;
-    public void pause(TriviaClient k) throws RemoteException;
     public void leave(TriviaClient k) throws RemoteException;
     public void answer(TriviaClient k, String s) throws RemoteException;
 }
