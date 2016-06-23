@@ -14,6 +14,7 @@ import java.rmi.registry.Registry;
 
 public class TriviaServerRunner extends JFrame {
 
+    //Teksty do wyświetlenie w GUI
     private static final String WINDOWS_NAME = "Trivia Bot Server";
     private static final String PORT_NUMBER_LABEL = "Port RMI: ";
 
@@ -27,7 +28,7 @@ public class TriviaServerRunner extends JFrame {
     //Podstawowe ustawienie serwera
     private int portNumber = 1099;
 
-    //Referencja do serwera
+    //Referencje do serwera
     private Server mServer;
     TriviaServerRemote serverRemote;
 
@@ -37,6 +38,7 @@ public class TriviaServerRunner extends JFrame {
     //Referencja do logiki gry
     private TriviaGame mTriviaGame;
 
+    //Podstawowy konstruktor dla okna serwera
     public TriviaServerRunner() {
 
         //Ustawienie nazwy okna
@@ -49,6 +51,7 @@ public class TriviaServerRunner extends JFrame {
         this.mServerWindow = this;
     }
 
+    //Metoda ustawiająca okno serwera i odpowiadająca za jego zmiany
     private void prepareGUI() {
 
         this.setSize(768, 640);
@@ -71,19 +74,7 @@ public class TriviaServerRunner extends JFrame {
         startServerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Utwórz i uruchom serwer
-                mServer = new Server();
-                mServer.run();
-
-                //Uruchom grę
-                mTriviaGame = new TriviaGame(mServerWindow, serverRemote);
-
-                //Ustaw pola i przyciski na nieaktywne
-                portNumberTextField.setEnabled(false);
-                startServerButton.setEnabled(false);
-                stopServerButton.setEnabled(true);
-                startGameButton.setEnabled(true);
-                repaint();
+               runServer();
             }
         });
 
@@ -92,22 +83,7 @@ public class TriviaServerRunner extends JFrame {
         stopServerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Automatycznie zatrzymaj grę
-                if (mTriviaGame.getRunningStatus()) {
-                    mTriviaGame.finish();
-                }
-
-                //Wyłącz serwer
-                mServer.kill();
-
-                //Ustaw pola i przyciski na nieaktywne
-                portNumberTextField.setEnabled(true);
-                startServerButton.setEnabled(true);
-                stopServerButton.setEnabled(false);
-                startGameButton.setEnabled(false);
-                pauseGameButton.setEnabled(false);
-                finishGameButton.setEnabled(false);
-                repaint();
+                stopServer();
             }
         });
 
@@ -116,18 +92,7 @@ public class TriviaServerRunner extends JFrame {
         startGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Uruchom nową grę
-                mTriviaGame.run();
-
-                //Ustaw przyciski
-                if (mTriviaGame.getNumberOfQuestion() > 0) {
-                    startGameButton.setEnabled(false);
-                    pauseGameButton.setEnabled(true);
-                    finishGameButton.setEnabled(true);
-                    repaint();
-                } else {
-                    mTriviaGame.stop();
-                }
+              startGame();
             }
         });
 
@@ -136,10 +101,7 @@ public class TriviaServerRunner extends JFrame {
         pauseGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!mTriviaGame.getPausedStatus()){
-                mTriviaGame.pause();
-                }
-                repaint();
+                pauseGame();
             }
         });
 
@@ -148,14 +110,7 @@ public class TriviaServerRunner extends JFrame {
         finishGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (mTriviaGame.getRunningStatus()) {
-                    mTriviaGame.finish();
-                }
-
-                startGameButton.setEnabled(true);
-                pauseGameButton.setText("Pause Game");
-                pauseGameButton.setEnabled(false);
-                finishGameButton.setEnabled(false);
+            finishGame();
             }
         });
 
@@ -179,6 +134,78 @@ public class TriviaServerRunner extends JFrame {
         setVisible(true);
     }
 
+    //Metoda zaczynająca pracę serwera
+    private void runServer(){
+        //Utwórz i uruchom serwer
+        mServer = new Server();
+        mServer.run();
+
+        //Uruchom nową grę i przekaż jej referencje do serwera i do okna serwera
+        mTriviaGame = new TriviaGame(mServerWindow, serverRemote);
+
+        //Ustaw pola i przyciski na nieaktywne
+        portNumberTextField.setEnabled(false);
+        startServerButton.setEnabled(false);
+        stopServerButton.setEnabled(true);
+        startGameButton.setEnabled(true);
+        repaint();
+    }
+
+    //Metoda kończąca pracę serwera
+    private void stopServer(){
+        //Automatycznie zatrzymaj grę
+        if (mTriviaGame.getRunningStatus()) {
+            mTriviaGame.finish();
+        }
+
+        //Wyłącz serwer
+        mServer.kill();
+
+        //Ustaw pola i przyciski na nieaktywne
+        portNumberTextField.setEnabled(true);
+        startServerButton.setEnabled(true);
+        stopServerButton.setEnabled(false);
+        startGameButton.setEnabled(false);
+        pauseGameButton.setEnabled(false);
+        finishGameButton.setEnabled(false);
+        repaint();
+    }
+
+    //Metoda zaczynająca nową grę
+    private void startGame(){
+        //Uruchom nową grę
+        mTriviaGame.run();
+
+        //Ustaw przyciski
+        if (mTriviaGame.getNumberOfQuestion() > 0) {
+            startGameButton.setEnabled(false);
+            pauseGameButton.setEnabled(true);
+            finishGameButton.setEnabled(true);
+            repaint();
+        }
+    }
+
+    //Metoda pauzująca grę
+    private void pauseGame(){
+        if (!mTriviaGame.getPausedStatus()){
+            mTriviaGame.pause();
+        }
+        repaint();
+    }
+
+    //Metoda kończąca grę
+    private void finishGame(){
+        if (mTriviaGame.getRunningStatus()) {
+            mTriviaGame.finish();
+        }
+
+        startGameButton.setEnabled(true);
+        pauseGameButton.setText("Pause Game");
+        pauseGameButton.setEnabled(false);
+        finishGameButton.setEnabled(false);
+    }
+
+    //Klasa odpowiedzialna za tworzenie i usuwanie serwera RMI
     private class Server extends Thread {
 
         private Registry mRegistry;
@@ -200,7 +227,7 @@ public class TriviaServerRunner extends JFrame {
             }
 
             try {
-                serverRemote = new TriviaServerRemote(mServerWindow, mTriviaGame);
+                serverRemote = new TriviaServerRemote(mServerWindow);
                 mRegistry.rebind("TriviaBot Server", serverRemote);
                 showMessage("Server was successfully registered and is running at port number: " + portNumberTextField.getText());
             } catch (Exception e) {
@@ -218,11 +245,13 @@ public class TriviaServerRunner extends JFrame {
         }
     }
 
+    //Metoda odpowiedzialna za wyświetlanie wiadomości w oknie serwera
     public void showMessage(String message) {
         messagesTextArea.append(message + "\n");
         messagesTextArea.setCaretPosition(messagesTextArea.getDocument().getLength());
     }
 
+    //Główna metoda programu
     public static void main(String[] args) {
         new TriviaServerRunner();
     }

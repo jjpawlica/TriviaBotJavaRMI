@@ -18,20 +18,38 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
 
     //Przechowuje referencję do obecnej gry
     private TriviaGame mTriviaGame;
+    private boolean mTriviaGameRunningStatut;
 
-
-    public TriviaServerRemote(TriviaServerRunner serverWindow, TriviaGame mTriviaGame) throws RemoteException {
+    //Podstawowy konstuktor dla serwera gry
+    public TriviaServerRemote(TriviaServerRunner serverWindow) throws RemoteException {
         this.serverWindow = serverWindow;
-        this.mTriviaGame = mTriviaGame;
     }
 
+    //Co się dzieje jak gracz dołącza do gry
     public synchronized void join(TriviaClient client) throws RemoteException {
         triviaClients.add(client);
 
-        //check if game is running if not than join server if yes than join the game
-        serverWindow.showMessage("Player " + client.getPlayerName() + " has joined the game");
+        if (mTriviaGame != null) {
+            mTriviaGameRunningStatut = mTriviaGame.getRunningStatus();
+        } else {
+            mTriviaGameRunningStatut = false;
+        }
+
+        //Sprawdź czy gra jest w trakcie, wyświetl informacje na serwerze, wyślij obecne pytanie do gracza
+        if (mTriviaGameRunningStatut) {
+            serverWindow.showMessage("Player " + client.getPlayerName() + " has joined the game");
+            client.message("You have joined the game!");
+            client.message("Current question is: " + mTriviaGame.getCurrentQuestion());
+
+            //Odśwież listę graczy u pozostałych graczy
+
+        } else{
+            serverWindow.showMessage("Player " + client.getPlayerName() + " has joined the server");
+            client.message("You have join the server!");
+        }
     }
 
+    //Co się dzieje jak gracz uruchomił pauze
     public synchronized void pause(TriviaClient client) throws RemoteException {
 
         //check if game is running if not that cannot pause the game if yes than pause the game and add the pause limit
@@ -40,29 +58,64 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
         serverWindow.showMessage("Game will resume in 10 seconds!");
     }
 
+    //Co się dzieje jak gracz opuści grę
     public synchronized void leave(TriviaClient client) throws RemoteException {
-
-        //check if game is running if not than leave server if yes than leave the game
         triviaClients.remove(client);
-        serverWindow.showMessage("Player " + client.getPlayerName() + " has left the game");
+
+        if (mTriviaGame != null) {
+            mTriviaGameRunningStatut = mTriviaGame.getRunningStatus();
+        } else {
+            mTriviaGameRunningStatut = false;
+        }
+
+        triviaClients.remove(client);
+        if (mTriviaGameRunningStatut) {
+            serverWindow.showMessage("Player " + client.getPlayerName() + " has joined the game");
+
+            //Odśwież listę graczy u pozostałych graczy
+        } else {
+            serverWindow.showMessage("Player " + client.getPlayerName() + " has left the sever");
+        }
     }
 
+    //Co się dzieje jak gracz wyślę odpowiedź
     public synchronized void answer(TriviaClient client, String answer) throws RemoteException {
 
-        if(mTriviaGame.checkAnswer(answer)){
+        //Co się dzieje jak opowiedź jest prawidłowa
+        if (mTriviaGame.checkAnswer(answer)) {
             serverWindow.showMessage("Player " + client.getPlayerName() + " got the right answer");
+            client.setPlayerScore(client.getPlayerScore() + 1);
             serverWindow.showMessage("Player " + client.getPlayerName() + " has " + client.getPlayerScore() + " points");
             for (TriviaClient player : triviaClients) {
                 player.message("Player " + client.getPlayerName() + " got the right answer");
+                //Odśwież listę graczy u pozostałych graczy
             }
-        }else{
+            mTriviaGame.sendRandomQuestion();
+
+        } else {
+            //Co się dzieje jak odpowiedź jest nieprawidłowa
             client.message("That is not the correct answer for this question!");
         }
     }
 
+    //Zarejestru wątek gry
+    public synchronized void registerGame(TriviaGame mTriviaGame) {
+        this.mTriviaGame = mTriviaGame;
+    }
+
+    //Wyślij zawiadomienie do wszystkich graczy
     public synchronized void annouce(String announcement) throws RemoteException {
         for (TriviaClient client : triviaClients) {
             client.message(announcement);
+        }
+    }
+
+    //Wyślij wiadomość jak gra została zakończona
+    public synchronized void finishGame() throws RemoteException {
+        TriviaClient highestScoreClient;
+        for (TriviaClient client : triviaClients) {
+            highestScoreClient = client;
+            client.message("The game has finished");
         }
     }
 }

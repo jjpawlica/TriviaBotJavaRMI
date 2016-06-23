@@ -10,6 +10,7 @@ import java.rmi.registry.Registry;
  */
 public class TriviaClientRunner extends JFrame{
 
+    //Teksty do wyświetlenie w GUI
     private static final String WINDOWS_NAME = "Trivia Bot Client";
     private static final String SERVER_LABEL = "Server RMI: ";
 
@@ -25,7 +26,7 @@ public class TriviaClientRunner extends JFrame{
     //Podstawowe ustawienie serwera
     private String serverName = "localhost";
 
-    //Referencja do serwera
+    //Referencja do klienta
     private Client client;
 
     //Referencja do
