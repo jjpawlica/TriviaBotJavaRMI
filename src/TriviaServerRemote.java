@@ -1,6 +1,5 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -41,9 +40,23 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
             client.message("You have joined the game!");
             client.message("Current question is: " + mTriviaGame.getCurrentQuestion());
 
+            for (TriviaClient otherClient : triviaClients) {
+                if(client != otherClient){
+                   otherClient.message("Player " + client.getPlayerName() + " has joined the game");
+                   otherClient.refreshPlayerList(triviaClients);
+                }
+            }
+
         } else{
             serverWindow.showMessage("Player " + client.getPlayerName() + " has joined the server");
             client.message("You have join the server!");
+
+            for (TriviaClient otherClient : triviaClients) {
+                if(client != otherClient){
+                    otherClient.message("Player " + client.getPlayerName() + " has joined the server");
+                    otherClient.refreshPlayerList(triviaClients);
+                }
+            }
         }
 
         //Odśwież listę graczy na serwerze i u pozostałych graczy
@@ -136,7 +149,7 @@ public class TriviaServerRemote extends UnicastRemoteObject implements TriviaSer
             serverWindow.refreshPlayerList(triviaClients);
 
         } else {
-            serverWindow.showMessage("The game has finished with now players!");
+            serverWindow.showMessage("The game has finished with no players!");
         }
 
     }

@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Vector;
 
 /**
  * Project name: TriviaBotJavaRMI
@@ -55,6 +56,8 @@ public class TriviaClientRunner extends JFrame{
 
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                leaveButton.doClick();
+                setVisible(false);
                 System.exit(0);
             }
         });
@@ -70,11 +73,7 @@ public class TriviaClientRunner extends JFrame{
         joinButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                joinButton.setEnabled(false);
-                leaveButton.setEnabled(true);
-                hostName.setEnabled(false);
-                client = new Client();
-                client.start();
+                joinGame();
             }
         });
 
@@ -83,16 +82,7 @@ public class TriviaClientRunner extends JFrame{
         leaveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                playersList.clear();
-                try {
-                    mTriviaServer.leave(mTriviaClient);
-                } catch (Exception ex) {
-                    showMessage("Couldn't leave the game!");
-                    showMessage("Fallowing exception occurred: " + ex);
-                }
-                leaveButton.setEnabled(false);
-                joinButton.setEnabled(true);
-                hostName.setEnabled(true);
+                leaveGame();
             }
         });
 
@@ -144,6 +134,27 @@ public class TriviaClientRunner extends JFrame{
 
     }
 
+    private void joinGame(){
+        joinButton.setEnabled(false);
+        leaveButton.setEnabled(true);
+        hostName.setEnabled(false);
+        client = new Client();
+        client.start();
+    }
+
+    private void leaveGame(){
+        playersList.clear();
+        try {
+            mTriviaServer.leave(mTriviaClient);
+        } catch (Exception ex) {
+            showMessage("Couldn't leave the game!");
+            showMessage("Fallowing exception occurred: " + ex);
+        }
+        leaveButton.setEnabled(false);
+        joinButton.setEnabled(true);
+        hostName.setEnabled(true);
+    }
+
     private class Client extends Thread{
 
         private Registry mRegistry;
@@ -152,13 +163,12 @@ public class TriviaClientRunner extends JFrame{
             try {
                 mRegistry = LocateRegistry.getRegistry(hostName.getText());
                 mTriviaServer = (TriviaServer) mRegistry.lookup("TriviaBot Server");
-                showMessage("You join the game server");
                 String playerName = JOptionPane.showInputDialog(null, "Provide new player name");
                 mTriviaClient = new TriviaClientRemote(clientWindow, playerName);
                 mTriviaServer.join(mTriviaClient);
 
-            } catch (Exception e) {
-                System.out.println("Error in connecting to the server: " + e);
+            } catch (Exception ex) {
+                System.out.println("Error in connecting to the server: " + ex);
             }
         }
     }
@@ -168,7 +178,19 @@ public class TriviaClientRunner extends JFrame{
         messagesTextArea.setCaretPosition(messagesTextArea.getDocument().getLength());
     }
 
-    public void refreshPlayerList(){}
+    //Metoda odpowiedziala za odświeżanie listy graczy na serwerze
+    public void refreshPlayerList(Vector<TriviaClient> newPlayersList) {
+        playersList.clear();
+
+        for (TriviaClient client : newPlayersList) {
+            try {
+                playersList.addElement(client.getPlayerName() + ": " + client.getPlayerScore());
+            } catch (Exception ex) {
+                showMessage("Couldn't refresh players list!");
+                showMessage("Exception: " + ex);
+            }
+        }
+    }
 
     public static void main(String[] args) {
         new TriviaClientRunner();

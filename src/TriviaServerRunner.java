@@ -62,6 +62,8 @@ public class TriviaServerRunner extends JFrame {
 
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                stopServerButton.doClick();
+                setVisible(false);
                 System.exit(0);
             }
         });

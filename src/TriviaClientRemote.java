@@ -7,10 +7,7 @@ import java.util.Vector;
  * Created by: jjpawlica on 21.06.2016.
  */
 
-public class TriviaClientRemote extends UnicastRemoteObject implements TriviaClient{
-
-    private final static String JOIN_MESSAGE = "New player joined the game: ";
-    private final static String LEAVE_MESSAGE = "Player has left the game: ";
+public class TriviaClientRemote extends UnicastRemoteObject implements TriviaClient {
 
     //Przechowuje nazwę gracza
     private String playerName;
@@ -21,62 +18,41 @@ public class TriviaClientRemote extends UnicastRemoteObject implements TriviaCli
     //Przechowuje referencję do okna serwera
     private TriviaClientRunner clientWindow;
 
-    public TriviaClientRemote(TriviaClientRunner clientWindow, String playerName) throws RemoteException{
+    //Podstawowy konstuktor klienta
+    public TriviaClientRemote(TriviaClientRunner clientWindow, String playerName) throws RemoteException {
         this.clientWindow = clientWindow;
         this.playerName = playerName;
     }
 
-    @Override
-    public void joinMessage(String playerName, Vector<TriviaClient> playersList) throws RemoteException {
-        this.clientWindow.showMessage(JOIN_MESSAGE + this.playerName);
-        this.clientWindow.refreshPlayerList();
-    }
 
+    //Metoda do wysyłania wiadomości graczowi
     @Override
     public void message(String message) throws RemoteException {
-        this.clientWindow.showMessage(message);
+        clientWindow.showMessage(message);
     }
 
-    @Override
-    public void leaveMessage(String playerName, Vector<TriviaClient> playerList) throws RemoteException {
-        this.clientWindow.showMessage(LEAVE_MESSAGE + this.playerName);
-        this.clientWindow.refreshPlayerList();
-    }
-
-    @Override
-    public void answer(String answer) throws RemoteException {
-
-    }
-
+    //Metoda pobiera nazwę gracza
     @Override
     public String getPlayerName() throws RemoteException {
-       return this.playerName;
+        return this.playerName;
     }
 
+    //Metoda pobier obecny wyniki gracza
     @Override
     public int getPlayerScore() throws RemoteException {
         return this.playerScore;
     }
 
-    @Override
-    public int getPlayerPauseLimit() throws RemoteException {
-        return 3; // to do
-    }
-
-    @Override
-    public void setPlayerName(String newName) throws RemoteException {
-      this.playerName = newName;
-    }
-
+    //Metoda ustwania nowy wyniki graczowi
     @Override
     public void setPlayerScore(int newScore) throws RemoteException {
         this.playerScore = newScore;
     }
 
+    //Metoda oświeża listę graczy u klienta
     @Override
-    public void setPlayerPauseLimit(int newLimit) throws RemoteException {
-
-        // to do
-
+    public void refreshPlayerList(Vector<TriviaClient> playerList) throws RemoteException {
+        clientWindow.refreshPlayerList(playerList);
     }
 }
+
